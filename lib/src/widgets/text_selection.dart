@@ -32,7 +32,7 @@ class NFTextSelectionControls extends MaterialTextSelectionControls {
     Offset selectionMidpoint,
     List<TextSelectionPoint> endpoints,
     TextSelectionDelegate delegate,
-    ClipboardStatusNotifier? clipboardStatus,
+    ClipboardStatusNotifier clipboardStatus,
     Offset? lastSecondaryTapDownPosition,
   ) {
     return _TextSelectionControlsToolbar(
