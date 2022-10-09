@@ -32,7 +32,7 @@ class NFTextSelectionControls extends MaterialTextSelectionControls {
     Offset selectionMidpoint,
     List<TextSelectionPoint> endpoints,
     TextSelectionDelegate delegate,
-    ClipboardStatusNotifier clipboardStatus,
+    ClipboardStatusNotifier? clipboardStatus,
     Offset? lastSecondaryTapDownPosition,
   ) {
     return _TextSelectionControlsToolbar(
@@ -43,10 +43,14 @@ class NFTextSelectionControls extends MaterialTextSelectionControls {
       endpoints: endpoints,
       delegate: delegate,
       clipboardStatus: clipboardStatus,
-      handleCut: canCut(delegate) ? () => handleCut(delegate, clipboardStatus) : null,
-      handleCopy: canCopy(delegate) ? () => handleCopy(delegate, clipboardStatus) : null,
+      handleCut:
+          canCut(delegate) ? () => handleCut(delegate, clipboardStatus) : null,
+      handleCopy: canCopy(delegate)
+          ? () => handleCopy(delegate, clipboardStatus)
+          : null,
       handlePaste: canPaste(delegate) ? () => handlePaste(delegate) : null,
-      handleSelectAll: canSelectAll(delegate) ? () => handleSelectAll(delegate) : null,
+      handleSelectAll:
+          canSelectAll(delegate) ? () => handleSelectAll(delegate) : null,
     );
   }
 }
@@ -61,7 +65,6 @@ class _TextSelectionToolbarItemData {
   final String label;
   final VoidCallback onPressed;
 }
-
 
 class _TextSelectionControlsToolbar extends StatefulWidget {
   const _TextSelectionControlsToolbar({
@@ -92,10 +95,12 @@ class _TextSelectionControlsToolbar extends StatefulWidget {
   final double textLineHeight;
 
   @override
-  _TextSelectionControlsToolbarState createState() => _TextSelectionControlsToolbarState();
+  _TextSelectionControlsToolbarState createState() =>
+      _TextSelectionControlsToolbarState();
 }
 
-class _TextSelectionControlsToolbarState extends State<_TextSelectionControlsToolbar> with TickerProviderStateMixin {
+class _TextSelectionControlsToolbarState
+    extends State<_TextSelectionControlsToolbar> with TickerProviderStateMixin {
   void _onChangedClipboardStatus() {
     setState(() {
       // Inform the widget that the value of clipboardStatus has changed.
@@ -132,38 +137,45 @@ class _TextSelectionControlsToolbarState extends State<_TextSelectionControlsToo
   @override
   Widget build(BuildContext context) {
     // If there are no buttons to be shown, don't render anything.
-    if (widget.handleCut == null && widget.handleCopy == null
-        && widget.handlePaste == null && widget.handleSelectAll == null) {
+    if (widget.handleCut == null &&
+        widget.handleCopy == null &&
+        widget.handlePaste == null &&
+        widget.handleSelectAll == null) {
       return const SizedBox.shrink();
     }
     // If the paste button is desired, don't render anything until the state of
     // the clipboard is known, since it's used to determine if paste is shown.
-    if (widget.handlePaste != null
-        && widget.clipboardStatus.value == ClipboardStatus.unknown) {
+    if (widget.handlePaste != null &&
+        widget.clipboardStatus.value == ClipboardStatus.unknown) {
       return const SizedBox.shrink();
     }
 
     // Calculate the positioning of the menu. It is placed above the selection
     // if there is enough room, or otherwise below.
     final TextSelectionPoint startTextSelectionPoint = widget.endpoints[0];
-    final TextSelectionPoint endTextSelectionPoint = widget.endpoints.length > 1
-      ? widget.endpoints[1]
-      : widget.endpoints[0];
+    final TextSelectionPoint endTextSelectionPoint =
+        widget.endpoints.length > 1 ? widget.endpoints[1] : widget.endpoints[0];
     final Offset anchorAbove = Offset(
-      widget.globalEditableRegion.left + widget.selectionMidpoint.dx,
-      widget.globalEditableRegion.top + startTextSelectionPoint.point.dy - widget.textLineHeight - _kToolbarContentDistance
-    );
+        widget.globalEditableRegion.left + widget.selectionMidpoint.dx,
+        widget.globalEditableRegion.top +
+            startTextSelectionPoint.point.dy -
+            widget.textLineHeight -
+            _kToolbarContentDistance);
     final Offset anchorBelow = Offset(
       widget.globalEditableRegion.left + widget.selectionMidpoint.dx,
-      widget.globalEditableRegion.top + endTextSelectionPoint.point.dy + _kToolbarContentDistanceBelow,
+      widget.globalEditableRegion.top +
+          endTextSelectionPoint.point.dy +
+          _kToolbarContentDistanceBelow,
     );
 
     // Determine which buttons will appear so that the order and total number is
     // known. A button's position in the menu can slightly affect its
     // appearance.
     assert(debugCheckHasMaterialLocalizations(context));
-    final MaterialLocalizations localizations = MaterialLocalizations.of(context);
-    final List<_TextSelectionToolbarItemData> itemDatas = <_TextSelectionToolbarItemData>[
+    final MaterialLocalizations localizations =
+        MaterialLocalizations.of(context);
+    final List<_TextSelectionToolbarItemData> itemDatas =
+        <_TextSelectionToolbarItemData>[
       if (widget.handleCut != null)
         _TextSelectionToolbarItemData(
           label: localizations.cutButtonLabel,
@@ -174,8 +186,8 @@ class _TextSelectionControlsToolbarState extends State<_TextSelectionControlsToo
           label: localizations.copyButtonLabel,
           onPressed: widget.handleCopy!,
         ),
-      if (widget.handlePaste != null
-          && widget.clipboardStatus.value == ClipboardStatus.pasteable)
+      if (widget.handlePaste != null &&
+          widget.clipboardStatus.value == ClipboardStatus.pasteable)
         _TextSelectionToolbarItemData(
           label: localizations.pasteButtonLabel,
           onPressed: widget.handlePaste!,
@@ -200,16 +212,21 @@ class _TextSelectionControlsToolbarState extends State<_TextSelectionControlsToo
           // This value was eyeballed to match the native text selection menu on
           // a Pixel 2 running Android 10.
           borderRadius: const BorderRadius.all(Radius.circular(7.0)),
-          color: widget.backgroundColor ?? Theme.of(context).colorScheme.secondary,
+          color:
+              widget.backgroundColor ?? Theme.of(context).colorScheme.secondary,
           clipBehavior: Clip.antiAlias,
           elevation: 1.0,
           type: MaterialType.card,
           child: child,
         );
       },
-      children: itemDatas.asMap().entries.map((MapEntry<int, _TextSelectionToolbarItemData> entry) {
+      children: itemDatas
+          .asMap()
+          .entries
+          .map((MapEntry<int, _TextSelectionToolbarItemData> entry) {
         return _TextSelectionToolbarTextButton(
-          padding: TextSelectionToolbarTextButton.getPadding(entry.key, itemDatas.length),
+          padding: TextSelectionToolbarTextButton.getPadding(
+              entry.key, itemDatas.length),
           onPressed: entry.value.onPressed,
           child: Text(entry.value.label),
         );
@@ -278,7 +295,8 @@ class _TextSelectionToolbarTextButton extends StatelessWidget {
   /// padding depending on their position in the toolbar.
   static EdgeInsets getPadding(int index, int total) {
     assert(total > 0 && index >= 0 && index < total);
-    final _TextSelectionToolbarItemPosition position = _getPosition(index, total);
+    final _TextSelectionToolbarItemPosition position =
+        _getPosition(index, total);
     return EdgeInsets.only(
       left: _getLeftPadding(position),
       right: _getRightPadding(position),
@@ -286,16 +304,16 @@ class _TextSelectionToolbarTextButton extends StatelessWidget {
   }
 
   static double _getLeftPadding(_TextSelectionToolbarItemPosition position) {
-    if (position == _TextSelectionToolbarItemPosition.first
-        || position == _TextSelectionToolbarItemPosition.only) {
+    if (position == _TextSelectionToolbarItemPosition.first ||
+        position == _TextSelectionToolbarItemPosition.only) {
       return _kEndPadding;
     }
     return _kMiddlePadding;
   }
 
   static double _getRightPadding(_TextSelectionToolbarItemPosition position) {
-    if (position == _TextSelectionToolbarItemPosition.last
-        || position == _TextSelectionToolbarItemPosition.only) {
+    if (position == _TextSelectionToolbarItemPosition.last ||
+        position == _TextSelectionToolbarItemPosition.only) {
       return _kEndPadding;
     }
     return _kMiddlePadding;
@@ -321,7 +339,8 @@ class _TextSelectionToolbarTextButton extends StatelessWidget {
         primary: theme.colorScheme.onBackground,
         splashFactory: NFListTileInkRipple.splashFactory,
         shape: const RoundedRectangleBorder(),
-        minimumSize: const Size(kMinInteractiveDimension, kMinInteractiveDimension),
+        minimumSize:
+            const Size(kMinInteractiveDimension, kMinInteractiveDimension),
         padding: padding,
       ),
       onPressed: onPressed,
