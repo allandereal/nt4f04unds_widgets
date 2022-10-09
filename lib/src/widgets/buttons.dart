@@ -226,9 +226,35 @@ class NFButton extends StatelessWidget {
 
   Widget _buildButton(BuildContext context) {
     final theme = Theme.of(context);
+
+    final ButtonStyle raisedButtonStyle = ElevatedButton.styleFrom(
+      onPrimary: Colors.black87,
+      primary: Colors.grey[300],
+      minimumSize: Size(88, 36),
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(2)),
+      ),
+    );
+
+    final ButtonStyle flatButtonStyle = TextButton.styleFrom(
+      primary: Colors.black87,
+      minimumSize: Size(88, 36),
+      padding: EdgeInsets.symmetric(horizontal: 16.0),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(2.0)),
+      ),
+    );
+
     switch (variant) {
       case NFButtonVariant.raised:
-        return RaisedButton(
+        return ElevatedButton(
+          style: raisedButtonStyle,
+          onPressed: () { },
+          child: _buildChild(context)
+          ///child: Text('Looks like a RaisedButton'),
+        );
+        /*return RaisedButton(
           color: color ?? theme.colorScheme.primary,
           splashColor: splashColor ?? Colors.black.withOpacity(0.18),
           highlightColor: Colors.transparent,
@@ -239,9 +265,20 @@ class NFButton extends StatelessWidget {
           ),
           materialTapTargetSize: materialTapTargetSize,
           child: _buildChild(context),
-        );
+        );*/
       case NFButtonVariant.flat:
-        return FlatButton(
+        return TextButton(
+          style: flatButtonStyle,
+          onPressed: () { },
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeInCubic,
+            child: _buildChild(context),
+          ),
+          ///child: Text('Looks like a FlatButton'),
+        );
+        /*return FlatButton(
           color: color ?? Colors.transparent,
           splashColor: splashColor ?? theme.splashColor,
           highlightColor: Colors.transparent,
@@ -257,7 +294,7 @@ class NFButton extends StatelessWidget {
             switchOutCurve: Curves.easeInCubic,
             child: _buildChild(context),
           ),
-        );
+        );*/
     }
   }
 
